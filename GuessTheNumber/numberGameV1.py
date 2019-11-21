@@ -7,6 +7,7 @@ import random
 print(dir(ggl))
 game = ggl.GuessingGameLogic()
 print(game)
+print(game.getGameState())
 quit()
 
 #Print a welcome screen
@@ -18,7 +19,7 @@ print("Only use whole numbers. 'Five' does not work.")
 
 
 #loop
-while gameState == ggl.GameState.kGuessing:
+while game.getGameState() == ggl.GameState.kGuessing:
     #get user guess
     try:
         userGuess = int(input("Guess the number:"))
