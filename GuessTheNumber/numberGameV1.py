@@ -7,6 +7,8 @@ import random
 print(dir(ggl))
 game = ggl.GuessingGameLogic()
 print(game)
+#game.start()
+print(game.makeGuess(5))
 quit()
 
 #Print a welcome screen
