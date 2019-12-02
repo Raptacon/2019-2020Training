@@ -4,11 +4,7 @@ This is a random number guessing game to show parts of python
 
 import guessingGameLogic as ggl
 import random
-print(dir(ggl))
 game = ggl.GuessingGameLogic()
-print(game)
-print(game.getGameState())
-quit()
 
 #Print a welcome screen
 #print instructions
@@ -18,30 +14,31 @@ print("Only use whole numbers. 'Five' does not work.")
 
 
 
-#loop
+#main game loop
 while game.getGameState() == ggl.GameState.kGuessing:
     #get user guess
     try:
-        userGuess = int(input("Guess the number:"))
+        game.setUserGuess(int(input("Guess the number:")))
     except TypeError as err:
         print("Please RTFM")
 
+    #process guess
+    game.setGuessResult()
+
     #see if guess is correct?
-    if secretNumber == userGuess:
+    game.getGameState()
+
+    #Print output based on game state returned
+    if game.getGameState() == ggl.GameState.kWon: #If you won
         print("You are as awsome as Cooper but he still wins.")
-        gameState = "won"
-        continue
-    elif secretNumber < userGuess:
+    elif game.getGameState() == ggl.GameState.kGuessTooHigh: #if your guess is too high
         print("Too High")
-    else:
+        game.continueGuessing()
+    elif game.getGameState() == ggl.GameState.kGuessTooLow: #if your guess is too low
         print("Too Low")
+        game.continueGuessing()
+    elif game.getGameState() == ggl.GameState.kLost: #if you lost
+        print("You lost. There was actual number was %d"%(game.getSecretNumber()))
     
-    guessesLeft -= 1
-    print(f"You have {guessesLeft} guesses left")
-
-    if not guessesLeft:
-        gameState = "lost"
-        print("You lost. There was actual number was %d"%(secretNumber))
-        continue
-
-
+    if game.getGameState() == ggl.GameState.kGuessing: #print guesses left if you are still guessing
+        print(f"You have {game.getGuessesLeft()} guesses left")
