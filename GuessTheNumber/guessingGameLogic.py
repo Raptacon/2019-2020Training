@@ -8,6 +8,10 @@ class GuessResults(Enum):
     kLow = auto()
     kHigh = auto()
     kCorrect = auto()
+    kQuit = auto()
+
+class GameControl(Enum):
+    kQuit = auto()
 
 class GameState(Flag):
     kNone = 0
@@ -88,7 +92,6 @@ class GuessingGameLogic():
         Checks if game is over
         Returns True if game is over, else false if game is running or not started
         """
-        print(self.gameState, GameState.kGameOver)
         return  bool(self.gameState & GameState.kGameOver)
 
     def isGameWon(self):
@@ -109,6 +112,12 @@ class GuessingGameLogic():
         """
         return self.guessHistory
 
+    def getGuessesRemaining(self):
+        """
+        returns the number of remaining guesses
+        """
+        return self.scaledGuesses - self.currGuess
+
     def getSecretNumber(self):
         """
         returns the secret number. If called outside of the will raise an exception
@@ -121,15 +130,18 @@ class GuessingGameLogic():
         """
         Causes the game to process a guess.
         Parameter:
-        guess (int) guess for user to check against
+        guess (int) guess for user to check against. (GameControl) controls gameplay, (None) quits
         Returns:
         k
         """
         if(not self.isInGame()):
-            print("Hello")
             error = "Game is not running. Current state %s"%(self.gameState)
             raise GameNotRunning(error)
-        
+
+        if(isinstance(guess ,GameControl) or guess is None):
+            self.gameState |= GameState.kGameLost
+            return GuessResults.kQuit
+
         #save a history
         results = self.__checkGuess__(guess)
         self.guessHistory.append((guess, results))

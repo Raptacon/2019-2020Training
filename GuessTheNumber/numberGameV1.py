@@ -3,46 +3,125 @@ This is a random number guessing game to show parts of python
 '''
 
 import guessingGameLogic as ggl
-import random
-print(dir(ggl))
-game = ggl.GuessingGameLogic()
-print(game)
-#game.start()
-print(game.makeGuess(5))
-quit()
 
-#Print a welcome screen
-#print instructions
-print("Welcome to Coopers guessing game! You alawys lose unless you are good.")
-print("When prompted enter your guess. If you are wrong you lose, maybe. (Hint we like numbers less than 21 but more than NULL!!!!)")
-print("Only use whole numbers. 'Five' does not work.")
+game = None
+gamesWon = 0
+gamesLost = 0
+gamesPlayed = 0
+gamePlaying = True
+gameSelectedRange = None
+gameDifficulies = ((1,10, 4), (1,100, 7), (1,1000, 10))
+
+def welcome():
+    print("Welcome to the number guessing game")
+    print("When promted enter your guess.")
+    help()
+
+def help():
+    print("Use 'Help' to get help")
+    print("Use 'Quit' to quit")
+    print("Use 'List' to get a list")
+    print("use 'Reset' to restart the game")
+
+def farwell():
+    print("Thanks for playing")
+    print("You won %d of %d games"%(gamesWon, gamesPlayed))
+
+def getDifficulty():
+    global gamePlaying
+    global game
+    game = None
+    while game == None:
+        try:
+            userInput = input("Please select a difficulty (1-3) or quit:")
+            userInput = userInput.lower()
+            if userInput == 'quit':
+                gamePlaying = False
+                break
+            try:
+                difficulty = int(userInput)
+                assert(difficulty > 0)
+                assert(difficulty < 41)
+                createGame(difficulty-1)
+            except:
+                pass
+        except KeyboardInterrupt:
+            print("Please use quit")
 
 
+def createGame(difficulty):
+    global game
+    global gamesPlayed
+    global gameSelectedRange
+    gameSelectedRange = gameDifficulies[difficulty]
+    game = ggl.GuessingGameLogic(*gameSelectedRange)
+    gamesPlayed +=1
 
-#loop
-while gameState == ggl.GameState.kGuessing:
-    #get user guess
-    try:
-        userGuess = int(input("Guess the number:"))
-    except TypeError as err:
-        print("Please RTFM")
+def listGuesses():
+    gusses = game.getGuessHistory()
+    currGuess = 1
+    for guess in gusses:
+        if guess[1] == ggl.GuessResults.kLow:
+            result = "Too Low"
+        elif guess[1] == ggl.GuessResults.kHigh:
+            result = "Too High"
+        elif guess[1] == ggl.GuessResults.kCorrect:
+            result = "Correct"
+        print("%d: %d is %s"%(currGuess, guess[0], result))
+        currGuess +=1
 
-    #see if guess is correct?
-    if secretNumber == userGuess:
-        print("You are as awsome as Cooper but he still wins.")
-        gameState = "won"
-        continue
-    elif secretNumber < userGuess:
-        print("Too High")
+def getUserGuess():
+    validGuess = None
+    while not validGuess:
+        try:
+            userInput = input("Please enter guess (or cmd) between %d and %d: "%(gameSelectedRange[0], gameSelectedRange[1])).lower()
+            if userInput == "help":
+                help()
+            elif userInput == "quit":
+                validGuess = ggl.GameControl.kQuit
+            elif userInput == "list":
+                listGuesses()
+            else:
+                try:
+                    validGuess = int(userInput)
+                except:
+                    print("Invalid argument %s"%(userInput))
+        except KeyboardInterrupt:
+            print("Please use quit")    
+    return validGuess
+
+
+def playRound():
+    global gamesWon, gamesLost
+    game.start()
+    while not game.isGameOver():
+        guess = getUserGuess()
+        result = game.makeGuess(guess)
+
+        if(result == ggl.GuessResults.kLow):
+            print("%d was too low. %d guesses remaing"%(guess, game.getGuessesRemaining()))
+        if(result == ggl.GuessResults.kHigh):
+            print("%d was too high. %d guesses remaing"%(guess, game.getGuessesRemaining()))
+        if(result == ggl.GuessResults.kCorrect):
+            print("You got it in %d guesses."%(len(game.getGuessHistory())))
+
+    secretNumber = game.getSecretNumber()
+    totalGuesses = len(game.getGuessHistory())
+    if game.isGameWon():
+        print("Great job you won. The correct number was %d. You got it in %d guesses"%(secretNumber, totalGuesses))
+        gamesWon +=1
     else:
-        print("Too Low")
-    
-    guessesLeft -= 1
-    print(f"You have {guessesLeft} guesses left")
+        print("You lost. The correct number was %d. You tried %d guesses"%(secretNumber, totalGuesses))
+        gamesLost +=1
 
-    if not guessesLeft:
-        gameState = "lost"
-        print("You lost. There was actual number was %d"%(secretNumber))
-        continue
+def main():
+    welcome()
+    while gamePlaying:
+        getDifficulty()
+        if game:
+            playRound()
+    farwell()
 
-
+if __name__ == "__main__":
+    main()
+    quit()
