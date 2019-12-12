@@ -5,7 +5,7 @@ This is a random number guessing game to show parts of python
 import guessingGameLogic as ggl
 import random
 print(dir(ggl))
-game = ggl.GuessingGameLogic(1,1,10)
+game = ggl.GuessingGameLogic(1,1,0)
 
 #Print a welcome screen
 #print instructions
