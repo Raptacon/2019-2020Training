@@ -9,6 +9,9 @@ class GameState(Enum):
     kWon = auto()
     kLost = auto()
 
+    kGuessTooHigh = auto()
+    kGuessTooLow = auto()
+
 class GuessingGameLogic(): 
 
     def __init__(self, minSec = 1, maxSec = 20, numGuess = 3):
