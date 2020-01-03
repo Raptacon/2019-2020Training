@@ -5,42 +5,34 @@ This is a random number guessing game to show parts of python
 import guessingGameLogic as ggl
 import random
 print(dir(ggl))
-game = ggl.GuessingGameLogic()
-print(game)
-quit()
+game = ggl.GuessingGameLogic(1,1,0)
 
 #Print a welcome screen
 #print instructions
-print("Welcome to Coopers guessing game! You alawys lose unless you are good.")
-print("When prompted enter your guess. If you are wrong you lose, maybe. (Hint we like numbers less than 21 but more than NULL!!!!)")
-print("Only use whole numbers. 'Five' does not work.")
+print("Welcome to my guessing game!")
+print("When prompted enter your guess. If you are wrong you lose, maybe.")
+print("Only use whole numbers such as '5'. 'Five' does not work.")
 
 
 
 #loop
-while gameState == ggl.GameState.kGuessing:
+while game.getGameState() == ggl.GameState.kGuessing:
     #get user guess
     try:
         userGuess = int(input("Guess the number:"))
+
     except TypeError as err:
         print("Please RTFM")
+        quit()
+
+    except ValueError as err:
+        print("Please RTFM")
+        quit()
 
     #see if guess is correct?
-    if secretNumber == userGuess:
-        print("You are as awsome as Cooper but he still wins.")
-        gameState = "won"
-        continue
-    elif secretNumber < userGuess:
-        print("Too High")
-    else:
-        print("Too Low")
-    
-    guessesLeft -= 1
-    print(f"You have {guessesLeft} guesses left")
-
-    if not guessesLeft:
-        gameState = "lost"
-        print("You lost. There was actual number was %d"%(secretNumber))
-        continue
-
-
+    print(game.checkNumber(userGuess))
+    if game.getGameState() == ggl.GameState.kWon and input("Congratulations! Would you like to play again? (yes if so)") == "yes":
+        game.start()
+    if game.getGameState() == ggl.GameState.kLost and input("Oh no! Would you like to try again? (yes if so)") == "yes":
+        game.start()
+print("Goodbye!")
