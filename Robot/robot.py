@@ -15,6 +15,9 @@ class MyRobot(wpilib.SampleRobot):
         self.pwMotor = wpilib.PWMSpeedController(0)
         log.info("robot initialized")
 
+        self.encoder = wpilib.Encoder(0,1) #DUMMY NUMBERS PLS CHANGE BECAUSE THEY HAVE ACTUALLY NO MEANING
+        log.info("encoder initialized")
+
     def operatorControl(self):
         log.info("operator control")
         while self.isOperatorControl and self.isEnabled:
@@ -22,6 +25,8 @@ class MyRobot(wpilib.SampleRobot):
             wpilib.Timer.delay(.1)
             self.motor.set(self.controller.getY())
             self.pwMotor.set(self.controller.getX())
+
+            log.debug("encoder:"+str(self.encoder.get())) #This *should* get the current count if I read the docs right -Alex
 
 if __name__ == "__main__":
     main()
