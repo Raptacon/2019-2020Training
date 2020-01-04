@@ -26,11 +26,11 @@ class MyRobot(wpilib.SampleRobot):
         self.PIDcontrol.setContinuous()
         self.PIDcontrol.setOutputRange(minOutput, maxOutput)
         self.PIDcontrol.enable()
-        
+
     def operatorControl(self):
         log.info("operator control")
         while self.isOperatorControl and self.isEnabled:
-            log.debug("joystick is %f y", self.controller.getY(), self.controller.getX())
+            log.debug("joystick is %f y", self.controller.getY())
             wpilib.Timer.delay(.1)
             self.PIDcontrol.setSetpoint(self.controller.getY()*360)
 
