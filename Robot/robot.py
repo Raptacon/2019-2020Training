@@ -19,7 +19,7 @@ class MyRobot(wpilib.SampleRobot):
         """Creates an encoder object using two channel parameters, creates a PID controller
         with multiple parameters, and is ready for PID loop"""
         self.encoder = wpilib.Encoder(A, B)
-        self.encoder.setReverseDirection(Reverse)
+        self.encoder.setReverseDirection(Reverse) #If reversed, positive is considered forward. May change.
         self.encoder.setDistancePerPulse(distPerPulse)
         self.encoder.setMinRate(minRate)
         self.encoder.setMaxPeriod(maxPeriod)
@@ -31,14 +31,16 @@ class MyRobot(wpilib.SampleRobot):
         self.PIDcontrol.enable()
     def resetEncoder(self):
         self.encoder.reset()
-
+    def setSpeed(self, rate = 0):
+        """rate should be between -360 and 360, probably needs modification"""
+        self.PIDcontrol.setSetpoint(self.encoder.getDistance()+rate)
     def operatorControl(self):
         log.info("operator control")
         while self.isOperatorControl and self.isEnabled:
             log.debug("joystick is %f y", self.controller.getY())
             wpilib.Timer.delay(.1)
-            self.PIDcontrol.setSetpoint(self.controller.getY()*360)
-            self.resetEncoder()
+            rate = self.controller.getY()*360
+            self.setSpeed(rate)
 
 if __name__ == "__main__":
     main()
