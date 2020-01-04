@@ -12,8 +12,8 @@ class MyRobot(wpilib.SampleRobot):
     def robotInit(self):
         self.controller = wpilib.Joystick(0)
         self.motor = ctre.WPI_TalonSRX(0)
-        log.info("robot initialized")
-        self.encoderInit(1, 0, 0, 1, 50, 1, 1, 1, 1, self.motor, 50, -360, 360, -1, 1) #Most numbers should be checked, especially PIDF. Distance per pulse should be determined in degrees (makes sense)
+        log.info("robot initialized")  # /  PIDF  \
+        self.encoderInit(1, 0, 0, 1, 50, 1, 1, 1, 0, self.motor, 50, -360, 360, -1, 1) #Most numbers should be checked, especially PIDF. Distance per pulse should be determined in degrees (makes sense)
 
     def encoderInit(self, A, B, distPerPulse, minRate, maxPeriod, P, I, D, F, motor, period, minInput, maxInput, minOutput, maxOutput):
         self.encoder = wpilib.Encoder(A, B)
