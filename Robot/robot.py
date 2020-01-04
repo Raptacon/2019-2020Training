@@ -13,19 +13,24 @@ class MyRobot(wpilib.SampleRobot):
         self.controller = wpilib.Joystick(0)
         self.motor = ctre.WPI_TalonSRX(0)
         log.info("robot initialized")  # /  PIDF  \
-        self.encoderInit(1, 0, 0, 1, 50, 1, 1, 1, 0, self.motor, 50, -360, 360, -1, 1) #Most numbers should be checked, especially PIDF. Distance per pulse should be determined in degrees (makes sense)
+        self.encoderInit(1, 0, True, 0, 1, 50, 1, 1, 1, 0, self.motor, 50, -360, 360, -1, 1) #Most numbers should be checked, especially PIDF. Distance per pulse should be determined in degrees (makes sense)
 
-    def encoderInit(self, A, B, distPerPulse, minRate, maxPeriod, P, I, D, F, motor, period, minInput, maxInput, minOutput, maxOutput):
+    def encoderInit(self, A, B, Reverse, distPerPulse, minRate, maxPeriod, P, I, D, F, motor, period, minInput, maxInput, minOutput, maxOutput):
+        """Creates an encoder object using two channel parameters, creates a PID controller
+        with multiple parameters, and is ready for PID loop"""
         self.encoder = wpilib.Encoder(A, B)
-        self.encoder.setReverseDirection(True)
+        self.encoder.setReverseDirection(Reverse)
         self.encoder.setDistancePerPulse(distPerPulse)
         self.encoder.setMinRate(minRate)
         self.encoder.setMaxPeriod(maxPeriod)
+
         self.PIDcontrol = wpilib.PIDController(P, I, D, F, self.encoder, motor, period)
         self.PIDcontrol.setInputRange(minInput, maxInput)
         self.PIDcontrol.setContinuous()
         self.PIDcontrol.setOutputRange(minOutput, maxOutput)
         self.PIDcontrol.enable()
+    def resetEncoder(self):
+        self.encoder.reset()
 
     def operatorControl(self):
         log.info("operator control")
@@ -33,6 +38,7 @@ class MyRobot(wpilib.SampleRobot):
             log.debug("joystick is %f y", self.controller.getY())
             wpilib.Timer.delay(.1)
             self.PIDcontrol.setSetpoint(self.controller.getY()*360)
+            self.resetEncoder()
 
 if __name__ == "__main__":
     main()
